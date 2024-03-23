@@ -53,7 +53,7 @@ function Chat() {
          <Welcome currUser={currentUser}/>
         ) 
         :(
-          <ChatContainer currentChat={currentChat}/>
+          <ChatContainer currentChat={currentChat} currentUser={currentUser}/>
         )
         
         }
