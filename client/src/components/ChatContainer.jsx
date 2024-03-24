@@ -4,13 +4,21 @@ import Logout from './Logout';
 import ChatInput from './ChatInput';
 import Messages from './Messages';
 import axios from 'axios';
-import { sendMessageRoute } from '../utils/APIRoutes';
+import { getAllMessagesRoute, getMessagesRoute, sendMessageRoute } from '../utils/APIRoutes';
 export default function ChatContainer({currentChat,currentUser}) {
 
+    const [messages,setMessages] = useState([])
     
     useEffect(()=>{
-        console.log(currentChat);
-    },[currentChat])
+        async function fetch(){
+            const response = await axios.post(`${getMessagesRoute}`,{
+                from : currentUser._id,
+                to:currentChat._id
+            })
+            setMessages(response.data)
+        }
+        currentChat && fetch()
+    },[currentChat,messages])
 
     const handleSendMsg = async(msg)=>{
         const {data}= await axios.post(`${sendMessageRoute}`,{
@@ -34,7 +42,23 @@ export default function ChatContainer({currentChat,currentUser}) {
                     </div>
                     <Logout/>
                 </div>
-                <Messages />
+                <div className="chat-messages">
+                    {messages.map((message) => {
+                    return (
+                        <div  >
+                        <div
+                            className={`message ${
+                            message.fromSelf ? "sended" : "recieved"
+                            }`}
+                        >
+                            <div className="content ">
+                            <p>{message.message}</p>
+                            </div>
+                        </div>
+                        </div>
+                    );
+                    })}
+                </div>
                 <ChatInput handleSendMsg={handleSendMsg}/>
             </Container>)
         }
